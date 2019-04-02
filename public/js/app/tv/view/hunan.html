@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>积木云-直播</title>
+  <!-- Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet" href="../../../../css/bootstrap.css">
+  <!-- style CSS 文件 -->
+  <link rel="stylesheet" href="../../../../css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../../../fonts/fontawesome-webfont.svg">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../../../js/vendor/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="../../../../js/vendor/ckplayer/ckplayer.js" charset="utf-8"></script>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li><a href="../../../../js/app/tv/view/hunan.html">湖南卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/zhejiang.html">浙江卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/jiangsu.html">江苏卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/dongfang.html">东方卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/beijing.html">北京卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/anhui.html">安徽卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/tianjin.html">天津卫视</a></li>
+            <li><a href="../../../../js/app/tv/view/hebei.html">河北卫视</a></li>
+        </ul>
+        </div><!-- /.navbar-collapse -->
+        <div id="a1"></div>
+    </nav>
+    <script type="text/javascript">
+        var videoUrl = "http://sxws.chinashadt.com:1957/live/tv1.stream_360p/playlist.m3u8&c=0&p=1&s=4&lv=1&loaded=loadedHandler";//视频地址
+        var flashvars={
+          f:"../../../../js/vendor/ckplayer/m3u8.swf",
+          a:videoUrl,
+          s:4,
+          c:0,
+          p:1,
+          wh:'16:9'
+        };
+        var params={bgcolor:"#FFF",allowFullScreen:true,allowScriptAccess:"always",wmode:"transparent"};
+        var video=[videoUrl];
+        CKobject.embed("../../../../js/vendor/ckplayer/ckplayer.swf","a1","ckplayer_a1","100%","510",false,flashvars,video,params);
+    </script>
+</body>
+</html>

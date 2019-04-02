@@ -2,6 +2,10 @@
 
 namespace App\Services;
 use App\Models\KeyValue;
+use Flc\Alidayu\Client;
+use Flc\Alidayu\App;
+use Flc\Alidayu\Requests\AlibabaAliqinFcSmsNumSend;
+use Flc\Alidayu\Requests\IRequest;
 
 class Helper
 {
@@ -83,7 +87,84 @@ class Helper
         }  
         return $fileArray;  
     }  
-  
+
+    /**
+    * 获取文件Mime
+    * @author tangtanglove <dai_hang_love@126.com>
+    */
+    static function detectFileMimeType($fileName='')
+    {
+        if(!function_exists('mime_content_type')) {
+            $mimeTypes = array(
+                'txt' => 'text/plain',
+                'htm' => 'text/html',
+                'html' => 'text/html',
+                'php' => 'text/html',
+                'css' => 'text/css',
+                'js' => 'application/javascript',
+                'json' => 'application/json',
+                'xml' => 'application/xml',
+                'swf' => 'application/x-shockwave-flash',
+                'flv' => 'video/x-flv',
+
+                // images
+                'png' => 'image/png',
+                'jpe' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'jpg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'bmp' => 'image/bmp',
+                'ico' => 'image/vnd.microsoft.icon',
+                'tiff' => 'image/tiff',
+                'tif' => 'image/tiff',
+                'svg' => 'image/svg+xml',
+                'svgz' => 'image/svg+xml',
+
+                // archives
+                'zip' => 'application/zip',
+                'rar' => 'application/x-rar-compressed',
+                'exe' => 'application/x-msdownload',
+                'msi' => 'application/x-msdownload',
+                'cab' => 'application/vnd.ms-cab-compressed',
+
+                // audio/video
+                'mp3' => 'audio/mpeg',
+                'qt' => 'video/quicktime',
+                'mov' => 'video/quicktime',
+
+                // adobe
+                'pdf' => 'application/pdf',
+                'psd' => 'image/vnd.adobe.photoshop',
+                'ai' => 'application/postscript',
+                'eps' => 'application/postscript',
+                'ps' => 'application/postscript',
+
+                // ms office
+                'doc' => 'application/msword',
+                'rtf' => 'application/rtf',
+                'xls' => 'application/vnd.ms-excel',
+                'ppt' => 'application/vnd.ms-powerpoint',
+
+                // open office
+                'odt' => 'application/vnd.oasis.opendocument.text',
+                'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+            );
+            $fileExt = explode('.',$fileName);
+            $ext = strtolower(array_pop($fileExt));
+            if (array_key_exists($ext, $mimeTypes)) {
+                return $mimeTypes[$ext];
+            } elseif (function_exists('finfo_open')) {
+                $fileInfo = finfo_open(FILEINFO_MIME);
+                $mimeType = finfo_file($fileInfo, $fileName);
+                finfo_close($fileInfo);
+                return $mimeType;
+            } else {
+                return 'application/octet-stream';
+            }
+        } else {
+            return mime_content_type($fileName);
+        }
+    }
   
     /**
     * 获取目录/文件列表 
@@ -121,7 +202,7 @@ class Helper
     }
 
     /**
-    * 将app字符串转换为系统中的utf8类型，目前只支持win中文版，linux版
+    * 将app字符串转换为系统中的GBK类型，目前只支持win中文版，linux版
     * @author tangtanglove <dai_hang_love@126.com>
     */
     static function appToSystemChar($value)
@@ -185,7 +266,7 @@ class Helper
     static function makeDir($dirPath)
     {
         if (!is_dir($dirPath)) {
-            $result = mkdir($dirPath);
+            $result = mkdir($dirPath,0777,true);
             if ($result) {
                 return 'success';
             } else {
@@ -388,6 +469,57 @@ class Helper
             return $active;
         } else {
             return '';
+        }
+    }
+
+    /**
+     * sms_post Sioo希奥发送手机短信接口
+     * @return string 验证码（用于测试）$uid  = '500',$auth = '680d1acc90b4f062'
+     */
+    static function siooSendSms($uid,$auth,$phone,$content) {
+        if(preg_match("/^1[34578]\d{9}$/", $phone)) {
+            //执行发短信
+            $msg  = $content;
+            $msg  = mb_convert_encoding($msg,'GBK','utf-8');
+            $va_url = "http://sms.10690221.com:9011/hy/?uid=".$uid."&auth=".$auth."&mobile=".$phone."&msg=".$msg."&expid=0"; //验证的 url 链接地址  
+            $ch = curl_init($va_url);  
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // 获取数据返回  
+            curl_setopt($ch, CURLOPT_BINARYTRANSFER, true); // 在启用 CURLOPT_RETURNTRANSFER 时候将获取数据返回  
+            $pageContents = curl_exec($ch);
+            curl_close($ch);
+        } else {
+            $this->error('手机号错误！');
+        }
+
+        if ($pageContents>=0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * sms_post Alidayu发送手机短信接口
+     * string $config = ['app_key' => '*****','app_secret' => '************',// 'sandbox' => true,  // 是否为沙箱环境，默认false;
+     * string $signName = '积木云'
+     * string $templateCode = 'SMS_70450333'
+     * string $phone = '15076569633'
+     * string $smsParam = [ 'number' => rand(100000, 999999)]
+     */
+    static function alidayuSendSms($config,$signName,$templateCode,$phone,$smsParam) {
+        if(preg_match("/^1[34578]\d{9}$/", $phone)) {
+            //执行发短信
+            $client = new Client(new App($config));
+            $req    = new AlibabaAliqinFcSmsNumSend;
+
+            $req->setRecNum($phone)
+                ->setSmsParam($smsParam)
+                ->setSmsFreeSignName($signName)
+                ->setSmsTemplateCode($templateCode);
+
+            $resp = $client->execute($req);
+        } else {
+            $this->error('手机号错误！');
         }
     }
 }

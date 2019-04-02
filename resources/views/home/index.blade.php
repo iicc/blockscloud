@@ -17,105 +17,37 @@
         @include('home/header')
         <div style="height:80px;"></div>
         <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
+        @if(isset($articles))
+            @foreach ($articles as $key=>$article)
+                @if ($key == 0)
+                <div class="row">
+                @endif
+                @if ($key == 4)
+                <div class="row">
+                @endif
+                    <div class="col-md-3">
+                        <div class="post-box">
+                            <div class="post-img">
+                                <a href="{{ route('home/article/detail',['id'=>$article->id]) }}"><img src="@if(!empty($article->cover_path)){{ route('home/base/getFile',['path'=>$article->cover_path]) }}@else /images/icons/default.jpg @endif" width="100%" height="150" /></a>
+                            </div>
+                            <div class="post-title">
+                                <a href="{{ route('home/article/detail',['id'=>$article->id]) }}">{{ $article->title }}</a>
+                            </div>
                         </div>
                     </div>
+                @if ($key == 3)
                 </div>
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
+                @endif
+                @if ($key == 7)
                 </div>
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="post-box">
-                        <div class="post-img">
-                            <a href="#"><img src="/images/1.png" width="100%" /></a>
-                        </div>
-                        <div class="post-title">
-                            <a href="#">我的文章</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                @endif
+            @endforeach
             <nav aria-label="...">
             <ul class="pagination">
-                <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li>
-                <a href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-                </li>
+            {{ $articles->links() }}
             </ul>
             </nav>
+        @endif
         </div>
     <!-- Scripts -->
     <script src="/js/vendor/jquery/1.11.3/jquery.min.js"></script>

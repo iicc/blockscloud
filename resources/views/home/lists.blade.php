@@ -17,6 +17,7 @@
         @include('home/header')
         <div style="height:80px;"></div>
         <div class="container">
+        @if(isset($articles))
             @foreach ($articles as $key=>$article)
                 @if ($key == 0)
                 <div class="row">
@@ -27,7 +28,7 @@
                     <div class="col-md-3">
                         <div class="post-box">
                             <div class="post-img">
-                                <a href="{{ route('home/article/detail',['id'=>$article->id,'category'=>$postCate->id]) }}"><img src="{{ route('home/base/getFile',['path'=>$article->cover_path]) }}" width="100%" height="150" /></a>
+                                <a href="{{ route('home/article/detail',['id'=>$article->id,'category'=>$postCate->id]) }}"><img src="@if(!empty($article->cover_path)){{ route('home/base/getFile',['path'=>$article->cover_path]) }}@else /images/icons/default.jpg @endif" width="100%" height="150" /></a>
                             </div>
                             <div class="post-title">
                                 <a href="{{ route('home/article/detail',['id'=>$article->id,'category'=>$postCate->id]) }}">{{ $article->title }}</a>
@@ -35,19 +36,20 @@
                         </div>
                     </div>
                 @if ($key == 3)
-                <div>
+                </div>
                 @endif
-                @if ($key == 5)
-                <div>
+                @if ($key == 7)
+                </div>
                 @endif
+                
             @endforeach
             <nav aria-label="...">
             <ul class="pagination">
-            {{ $articles->links() }}
+            {{ $articles->appends(['id'=>$postCate->id])->links() }}
             </ul>
             </nav>
+        @endif
         </div>
-
     <!-- Scripts -->
     <script src="/js/vendor/jquery/1.11.3/jquery.min.js"></script>
     <script src="/js/vendor/bootstrap/bootstrap.min.js"></script>
